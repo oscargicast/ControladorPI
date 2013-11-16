@@ -1,0 +1,209 @@
+\documentclass[twocolumn]{IEEEtran}
+
+\usepackage[ansinew]{inputenc} 
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage{hyperref}
+\usepackage{longtable}               
+\usepackage{fancyhdr}
+\usepackage{times}
+\usepackage{color}                   
+\usepackage{makeidx}                 
+\usepackage{cite}
+\usepackage{float}
+\setcounter{page}{1}
+
+
+\begin{document}
+
+\title{Identificación de una planta de 3 Opams (sistema de tercer orden) utilizando la estructura paramétrica ARMAX.}
+
+
+\author{Autores \\ 
+				Estrada Vidal, Jorge  \textcolor{blue}{jor1550g@gmail.com} \\
+				Florian Chacon, Erick  \textcolor{blue}{erick.florian.uni@gmail.com} \\
+				Giraldo Castillo, Oscar \textcolor{blue}{oscar.gi.cast@gmail.com} \\ 		
+				\vspace{4 mm}
+				Asesores: \\
+				Ing. Rodriguez Bustinza, Ricardo \textcolor{blue}{robust@uni.edu.pe} \\ 	
+				
+				\vspace{8 mm}
+				\emph{Universidad Nacional de Ingenier\'ia}
+		}			
+
+		
+		
+%\markboth{IEEE Trans...}{Murray and Balemi: ...}
+\maketitle
+
+
+
+
+
+\section{OBJETIVOS} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{itemize} \item Identificar el modelo de un planta de 3 Op-Amp?s a través de la adquisición de datos y de la estructura paramétrica ARMAX \end{itemize}
+
+\section{MARCO TEÓRICO}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ----------------------------------------------------------------------------------------------------
+\subsection{Estructuras de modelos parametricos}
+Las estructuras de modelos tambien conocidas como ``cajas negras'' quedan representadas por ejemplo, mediante una ecuación lineal en diferencias dado por:
+
+% ------------ Ecuacion numero 1 --------------
+\begin{eqnarray}
+\nonumber y \big(t\big) + a_{1} y \big(t-1\big) +...+ a_{ n_{a} } y \big(t- n_{a} \big) = \\
+b_{1}  u_{t-1} +...+ b_{ n_{b} } y \big(t- n_{b} \big) +e \big(t\big) \label{eq:1}
+\end{eqnarray}
+% -------------- FIN DE ECUACION --------------
+
+El termino de ruido blanco, e(t) aca ingresa como un error directo en la ecuacion en diferencias dada en ~\ref{eq:1}, a menudo es llamada ecuacion del modelo de error (estructura).\\
+
+El vector que es llamado vector de parametros es el objetivo del estudio, es decir, encontrando dicho vector podemos conocer el modelo discreto y por ende el modelo continuo.
+
+% ------------ Ecuacion numero 2 --------------
+\begin{eqnarray}
+ \theta = \big(
+ \begin{array}{ccccccc}
+ a_{1} & a_{2} & \cdots &  a_{ n_{a} } & b_{1} & \cdots &  b_{ n_{b} }
+\end{array}
+\big)  ^{T} \label{eq:2}
+\end{eqnarray}
+% -------------- FIN DE ECUACION --------------
+
+Dentro de estas estructuras parametricas principales que nos proporcionan las herramientas del software de simulacion de Matlab y LabVIEW está:\\
+
+\paragraph{Estructura Parametrica ARX}
+\paragraph{Estructura Parametrica ARMAX}
+\paragraph{Estructura Parametrica OE (Output Error)}
+\paragraph{Estructura Parametrica BJ (Box Jenkins)}
+
+En este laboratorio, estudiaremos la segunda estructura que describiremos a continuación:
+
+% ----------------------------------------------------------------------------------------------------
+\subsection{Estructura ARMAX}
+El modelo ARMAX (AutoRegresive eXogenous Moving Average) es mas flexible describiendo la ecuacion de error como un ``promedio movil'', el ruido blanco puede ser representado por e(t), el modelo presenta la relacion de entrada y salida que puede ser descrita por una ecuacion en diferencia lineal en la forma.
+
+% ------------ Ecuacion numero 3 --------------
+\begin{eqnarray}
+y\big(t\big) = \frac{B \big(q\big) }{A \big(q\big) } U \big(t\big)+ \frac{C \big(q\big) }{A \big(q\big) } e \big(t\big) \label{eq:3}
+\end{eqnarray}
+% -------------- FIN DE ECUACION --------------
+
+Siendo su función de transferencia:
+
+% ------------ Ecuacion numero 4 --------------
+\begin{eqnarray}
+Y\big(z\big) = \frac{B \big(z\big) }{A \big(z\big) }  z^{-d}U \big(z\big)+ \frac{C \big(z\big) }{A \big(z\big) } E \big(z\big) \label{eq:4}
+\end{eqnarray}
+% -------------- FIN DE ECUACION --------------
+
+%\begin{figure}[h!]
+%	\centering % Requires \usepackage{graphicx}
+% 	\includegraphics[height=4cm]{images/ARMAX_structure.png}
+% 	\caption{Estructura ARMAX.}
+% 	\label{fig:armax_structure}
+%\end{figure}
+
+A continuación presentamos un esquema básico del sistema analizado (ver Fig. ~\ref{fig:system_diagram}).\\
+
+%\begin{figure}[h!]
+%  \centering
+%    \includegraphics[height=4cm]{images/system_diagram.png}
+%  \caption{Esquema básico del sistema analizado}
+%  \label{fig:system_diagram}
+%\end{figure}
+
+En donde el bloque etiquetado como planta contiene lo siguiente: (ver Fig. ~\ref{fig:system_proteus})
+
+%\begin{figure}[h!]
+%  \centering
+%    \includegraphics[height=4cm]{images/system_proteus.png}
+%  \caption{Esquema realizado en Proteus}
+%  \label{fig:system_proteus}
+%\end{figure}
+
+Cuya simulación obtenida en Proteus es la siguiente: (ver Fig. ~\ref{fig:simulation_proteus})
+
+%\begin{figure}[h!]
+%  \centering
+%    \includegraphics[height=4cm]{images/simulation_proteus.png}
+%  \caption{Respuesta de la planta a la función Gate}
+%  \label{fig:simulation_proteus}
+%\end{figure}
+ 
+
+\section{PRESENTACIÓN DE RESULTADOSS} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Para hallar el controlador de nuestra planta RC, procederemos primero a identificar mediante un ARX[111], con esto obtendremos la planta identificada la cual seria como se muestra en la ecuación \ref{eq:5}.
+
+\begin{equation}
+P\big(s\big) =  \frac{Gain}{s+\frac{1}{\tau}} = \frac{8.66}{s+8.59} \label{eq:5}
+\end{equation}
+
+Asumiendo las siguientes variables de diseño:
+
+\begin{eqnarray}
+t_{s} = 1; \\
+M_{p} = 0.1;
+\end{eqnarray}
+
+Con esto procederemos a hallar nuestros polos deseados de la siguiente manera:
+
+\begin{eqnarray}
+\zeta = - \frac{\log(M_{p})}{\sqrt{\log(M_{p}^2 + \pi^2)}} = 0.5912 \\
+w_{n} = \frac{4.6}{\zeta * t_{s}} = 7.7814
+%wn=4.6/(zeta*ts);
+%t-log(Mp)/sqrt((log(Mp))^2+pi^2);
+\end{eqnarray}
+
+
+\section{CONCLUSIONES} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{itemize}
+\item Se debe estar consciente que el periodo de muestreo empleado en la adquisición de datos (usando DAQ) no debe cambiar al momento de realizar la identificación debido a que al hacerlo pudimos notar que la señal sufre una división en su frecuencia mientras más distante el tiempo de muestreo empleado sea del real. Así mismo cabe resaltar que nuestro $T_{s}=0.033...$, sin embargo, para labview basta con aproximarlo con $T_{s}=0.03$, de lo contrario nos encontraremos con errores propios del software.
+
+\item Los modelos identificados con buena performance (mayor a 89%) se mimetizan cuando a todos ellos se les aplica una entrada gate llegando a asimilarse de forma muy cercana a la data experimental y teórica. (ver Fig. ~\ref{gate_for_all_identified_models}).
+
+\item Podemos observar que mientras las respuestas se mimetizan, las funciones de transferencia parecen cambiar tanto en orden como en coeficientes dependiendo de los parámetros usados en ARMAX. Así mismo, podemos observar que tanto Matlab como Labview resuelven los modelos ARMAX para los mismos parámetros, entradas y salidas de forma parecida (los coeficientes tienden a ser los mismos).
+
+
+\item El tipo de entrada para la cual se puede obtener mayor característica del sistema es la señal gate y step(en segundo lugar), y la menor es la rampa y seno es por ello que ante una entrada gate, nuestra estructura ARMAX identifica un modelo con alto performance respecto a otras entradas. Es por ellos que cuando comparamos a todos los modelos frente a nuestra salida experimental, las que los modelos identificados que más la mimetizan son los del producto del gate y step.
+
+\item Las estructura ARMAX(1,1,1,1) o ARX pueden ser adecuadas para sistemas de primer orden, pero para el nuestro no lo es quedando comprobado en los graficos en los cuales comparamos diversas estructuras. 
+
+\item No siempre la estructura de mayor orden determina un mayor performance, y así lo hiciera se debe analizar el la eficiencia desde un punto de vista de desarrollo (computacional). 
+
+
+\end{itemize}
+
+
+\bibliographystyle{IEEE} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\nocite{*}
+\bibliographystyle{IEEE}
+
+\begin{thebibliography}{1}
+
+\bibitem{uno}
+Ministerio de Salud, Perú
+\newblock {\em REGISTRO NACIONAL DISCAPACIDAD EN CIFRAS}
+\newblock CONADIS-INEI 2008
+
+\bibitem{git}
+bitbucket.org
+\newblock {\em http://git-scm.com/}
+\newblock 
+
+\bibitem{bitbucket}
+bitbucket.org
+\newblock {\em https://bitbucket.org/jorgenro/proyecto-mecatronico}
+\newblock Repositorio privado
+
+\end{thebibliography}
+
+
+
+
+\end{document}
