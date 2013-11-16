@@ -97,11 +97,11 @@ Resultados Obtenidos
 
 ![identificacion_arx](https://raw.github.com/oskargicast/ControladorPI/master/imagenes/identificacion_arx.png "identificacion_arx")
 
-![pi_sistema_controlado](https://raw.github.com/oskargicast/ControladorPI/master/imagenes/pi_sistema_controlado "pi_sistema_controlado")
+![pi_sistema_controlado](https://raw.github.com/oskargicast/ControladorPI/master/imagenes/pi_sistema_controlado.png "pi_sistema_controlado")
 
-![pid_sistema_controlado](https://raw.github.com/oskargicast/ControladorPI/master/imagenes/pid_sistema_controlado "pid_sistema_controlado")
+![pid_sistema_controlado](https://raw.github.com/oskargicast/ControladorPI/master/imagenes/pid_sistema_controlado.png "pid_sistema_controlado")
 
-![compara_pi_pid](https://raw.github.com/oskargicast/ControladorPI/master/imagenes/compara_pi_pid "compara_pi_pid")
+![compara_pi_pid](https://raw.github.com/oskargicast/ControladorPI/master/imagenes/compara_pi_pid.png "compara_pi_pid")
 
 
 
