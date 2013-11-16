@@ -1,5 +1,5 @@
-Diseño de un controlador PI Analógico y por rediseño Digital
-============================================================
+Diseño Analítico de un Controlador PI Analógico y por Rediseño Digital
+======================================================================
 
 Diseño analítico de un controlador PI analógico y digital para un sistema de primer orden (circuito RC)
 
