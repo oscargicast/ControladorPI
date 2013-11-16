@@ -90,17 +90,27 @@ en nuestra */data* para nuestro controlador digital.
 
 
 Resultados Obtenidos 
---------------------
+====================
 
+Data Obtenida
+-------------
 ![data](https://raw.github.com/oskargicast/ControladorPI/master/imagenes/data.png
  "data")
 
+Identificación ARX
+------------------
 ![identificacion_arx](https://raw.github.com/oskargicast/ControladorPI/master/imagenes/identificacion_arx.png "identificacion_arx")
 
+Planta controlada usando un controlador PI
+------------------------------------------
 ![pi_sistema_controlado](https://raw.github.com/oskargicast/ControladorPI/master/imagenes/pi_sistema_controlado.png "pi_sistema_controlado")
 
+Planta controlada usando un controlador PID
+-------------------------------------------
 ![pid_sistema_controlado](https://raw.github.com/oskargicast/ControladorPI/master/imagenes/pid_sistema_controlado.png "pid_sistema_controlado")
 
+Comparación entre PI y PID
+--------------------------
 ![compara_pi_pid](https://raw.github.com/oskargicast/ControladorPI/master/imagenes/compara_pi_pid.png "compara_pi_pid")
 
 
