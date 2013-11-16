@@ -24,7 +24,8 @@ th=arx(data,[1 1 1]);
 present(th)
 thc=d2c(th);
 [num,den]=tfdata(thc);
-Gp=tf(num,den)
+Gp=tf(num,den);
+present(Gp)
 gain = num{1}(2);
 tau = 1/num{1}(2);
 
@@ -72,21 +73,74 @@ r3 = sd-zc; %zero
 K = abs(r1)*abs(r2)/(gain*abs(r3));
 
 % -------------------------------------------------------------------------
-%% Simulación del Controlador PI continuo
+%% Diseño del control PID continuo
 % -------------------------------------------------------------------------
-Gc=tf(K*[1 a],[1 0])
-% Funcion de transferencia en lazo cerrado H 
+qp1=pi-atan(id/rd); 
+qp2=atan((ip-id)/(rp-rd)); 
+qc=-pi+(qp1+qp2);   % condición de fase
+qb=qc/100;          % consideración de diseño para qb
+qa=qc/1000;         % consideración de diseño para qa
+
+if abs(qa)>pi/2
+    a=rd+id/tan(qa);
+else
+    a=rd-id/tan(qa);
+end
+
+if abs(qb)>pi/2
+    b=rd+id/tan(qb);
+else
+    b=rd-id/tan(qb);
+end
+
+
+
+
+
+
+% -------------------------------------------------------------------------
+%% Diseño del control PID continuo
+% -------------------------------------------------------------------------
+Gc=tf(conv([1 a],[1 b]),[1 0]);
+FLA=series(Gc,Gp);
+K=rlocfind(FLA,sd);
+Kp=K*(a+b);
+Ki=K*(a*b);
+Kd=K;
+Ti=Kp/Ki;
+Td=Kd/Kp;
+
+Gc=tf([Kp*Ti*Td Kp*Ti Kp],[Ti 0]);
 L=series(Gc,Gp);
-H=L/(L+1)
+H=L/(L+1);
 
 figure; hold on;
-t = 0:0.001:5;
-
+t=0:0.001:5;
 u=ones(size(t));
 yp=lsim(H,u,t);
 
 plot(t,u,'r')
-plot(t,yp, 'b', 'LineWidth',2)
+plot(t,yp,'LineWidth',2)
+
+xlabel('\bf t(seg)'); ylabel('\bf y(volts)');
+legend('set point', 'y_{lazo cerrado}');
+
+% -------------------------------------------------------------------------
+%% Simulación del Controlador PI continuo
+% -------------------------------------------------------------------------
+Gc=tf(K*[1 a],[1 0]);
+
+% Funcion de transferencia en lazo cerrado 
+L=series(Gc,Gp);
+H=L/(L+1);
+
+figure
+t=0:0.001:5;
+u=ones(size(t));
+yp=lsim(H,u,t);
+plot(t,u,'r')
+hold
+plot(t,yp,'LineWidth',2)
 
 xlabel('\bf t(seg)'); ylabel('\bf y(volts)');
 legend('set point', 'y_{lazo cerrado}');
@@ -110,13 +164,15 @@ DDt = sym2poly(DDt);
 % -------------------------------------------------------------------------
 %% FT del Controlador digital D(z)
 % -------------------------------------------------------------------------
-GDt = tf(NDt,DDt,T)
+GDt = tf(NDt,DDt,T);
+printsys(NDt,DDt,'z')
+[Np,Dp]=tfdata(Gp,'v');
+% datos=[Np, Dp, NDt, DDt];
+planta = [Np Dp];
 
 % -------------------------------------------------------------------------
 %% Coeficientes para lectura de LabVIEW
 % -------------------------------------------------------------------------
-[Np,Dp]=tfdata(Gp,'v');
-planta = [Np Dp]; 
 save '../data/coef_planta.lvm' planta -ascii -tabs
 save '../data/num_controller.lvm' NDt -ascii -tabs
 save '../data/den_controller.lvm' DDt -ascii -tabs

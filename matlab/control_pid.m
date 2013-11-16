@@ -107,7 +107,7 @@ Gdt = Nt/Dt;
 Gdt = subs(Gdt,{'s'},(2*(z-1))/(T*(z+1)));
 Gdt = simplify(Gdt);
 Gdt = vpa(Gdt,4); 
-[NDt DDt] = numden(Gdt);
+[NDt, DDt] = numden(Gdt);
 NDt = sym2poly(NDt);
 DDt = sym2poly(DDt);
 
@@ -117,7 +117,6 @@ DDt = sym2poly(DDt);
 GDt = tf(NDt,DDt,T);
 printsys(NDt,DDt,'z')
 [Np,Dp]=tfdata(Gp,'v');
-% datos=[Np, Dp, NDt, DDt];
 planta = [Np Dp];
 
 % -------------------------------------------------------------------------
