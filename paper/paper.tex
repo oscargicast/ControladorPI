@@ -33,12 +33,12 @@
   frame=single,                    % adds a frame around the code
   keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
   keywordstyle=\color{blue},       % keyword style
-  language=Octave,                 % the language of the code
+  language=Matlab,                 % the language of the code
   morekeywords={*,...},            % if you want to add more keywords to the set
   numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
   numbersep=5pt,                   % how far the line-numbers are from the code
   numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
-  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  rulecolor=\color{white},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
   showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
   showstringspaces=false,          % underline spaces within strings only
   showtabs=false,                  % show tabs within strings adding particular underscores
@@ -184,7 +184,7 @@ La data obtenida de la adquisición se puede apreciar en la figura ~\ref{fig:data
 \begin{figure}[h!]
 	\centering 
 	\graphicspath{./imagenes/}
- 	\includegraphics[height=4cm]{./imagenes/data.png}
+ 	\includegraphics[width=0.45\textwidth]{./imagenes/data.png}
  	\caption{Data obtenida de la adquisición}
  	\label{fig:data}
 \end{figure}
@@ -192,7 +192,7 @@ La data obtenida de la adquisición se puede apreciar en la figura ~\ref{fig:data
 \begin{figure}[h!]
 	\centering 
 	\graphicspath{./imagenes/}
- 	\includegraphics[height=4cm]{./imagenes/identificacion_arx.png}
+ 	\includegraphics[width=0.45\textwidth]{./imagenes/identificacion_arx.png}
  	\caption{Identificación ARX}
  	\label{fig:identificacion_arx}
 \end{figure}
@@ -204,9 +204,9 @@ Se identifica el sistema usando la estructura paramétrica ARX (ver Fig. ~\ref{fi
 \begin{lstlisting}
 clear all; close all; clc
 %% Programa para calcular el controlador
-% -------------------------------------------------------------------------
+% -----------------
 %% Cargando la DATA
-% -------------------------------------------------------------------------
+% -----------------
 dataLeida = load('../data/data_rc.lvm');
 T=1/30; % Tiempo de Muestreo 
 y1=dataLeida(:,4);
@@ -220,9 +220,9 @@ subplot(212)
 plot(u1,'r','LineWidth',2); 
 xlabel('\bf t(seg)'); ylabel('\bf u(volts)');
 
-% -------------------------------------------------------------------------
+% -------------------
 %% Identificación ARX
-% -------------------------------------------------------------------------
+% -------------------
 data=iddata(y1,u1,T);
 th=arx(data,[1 1 1]);
 present(th)
@@ -232,16 +232,16 @@ Gp=tf(num,den)
 gain = num{1}(2);
 tau = 1/num{1}(2);
 
-% -------------------------------------------------------------------------
+% -------------------
 %% Polos de la planta 
-% -------------------------------------------------------------------------
+% -------------------
 sp=pole(Gp);
 ip=abs(imag(sp));
 rp=abs(real(sp));
 
-% -------------------------------------------------------------------------
+% ------------------------------------------
 %% Especificaciones de diseño polos deseados
-% -------------------------------------------------------------------------
+% ------------------------------------------
 ts=1;
 Mp=0.1;
 zeta=-log(Mp)/sqrt((log(Mp))^2+pi^2);
@@ -252,9 +252,9 @@ sd=s1;
 id=abs(imag(sd));
 rd=abs(real(sd));
 
-% -------------------------------------------------------------------------
+% -------------------------------
 %% Diseño del control PI continuo
-% -------------------------------------------------------------------------
+% -------------------------------
 theta1=pi-atan(id/rd); 
 theta2=atan((id-ip)/(rp-rd)); 
 theta3=theta1+theta2+pi;   % condición de fase
@@ -275,9 +275,9 @@ r3 = sd-zc; %zero
 
 K = abs(r1)*abs(r2)/(gain*abs(r3));
 
-% -------------------------------------------------------------------------
+% ---------------------------------------
 %% Simulación del Controlador PI continuo
-% -------------------------------------------------------------------------
+% ---------------------------------------
 Gc=tf(K*[1 a],[1 0])
 % Funcion de transferencia en lazo cerrado H 
 L=series(Gc,Gp);
@@ -295,9 +295,10 @@ plot(t,yp, 'b', 'LineWidth',2)
 xlabel('\bf t(seg)'); ylabel('\bf y(volts)');
 legend('set point', 'y_{lazo cerrado}');
 
-% -------------------------------------------------------------------------
-%% Re-diseño por tustin del Control en Tiempo Discreto
-% -------------------------------------------------------------------------
+% ---------------------------------
+%% Re-diseño por tustin del Control 
+%% en Tiempo Discreto
+% ---------------------------------
 T=tau/5;
 [Nt,Dt] = tfdata(Gc,'v');
 Nt = poly2sym(Nt,'s');
@@ -311,14 +312,14 @@ Gdt = vpa(Gdt,4);
 NDt = sym2poly(NDt);
 DDt = sym2poly(DDt);
 
-% -------------------------------------------------------------------------
+% --------------------------------
 %% FT del Controlador digital D(z)
-% -------------------------------------------------------------------------
+% --------------------------------
 GDt = tf(NDt,DDt,T)
 
-% -------------------------------------------------------------------------
+% -------------------------------------
 %% Coeficientes para lectura de LabVIEW
-% -------------------------------------------------------------------------
+% -------------------------------------
 [Np,Dp]=tfdata(Gp,'v');
 planta = [Np Dp]; 
 save '../data/coef_planta.lvm' planta -ascii -tabs
@@ -336,7 +337,7 @@ Finalmente podemos validar que las respuestas de los sistemas controlados por un
 \begin{figure}[h!]
 	\centering 
 	\graphicspath{./imagenes/}
- 	\includegraphics[height=4cm]{./imagenes/pi_sistema_controlado.png}
+ 	\includegraphics[width=0.45\textwidth]{./imagenes/pi_sistema_controlado.png}
  	\caption{Planta controlada usando un controlador PI}
  	\label{fig:pi_sistema_controlado}
 \end{figure}
@@ -344,7 +345,7 @@ Finalmente podemos validar que las respuestas de los sistemas controlados por un
 \begin{figure}[h!]
 	\centering 
 	\graphicspath{./imagenes/}
- 	\includegraphics[height=4cm]{./imagenes/pid_sistema_controlado.png}
+ 	\includegraphics[width=0.45\textwidth]{./imagenes/pid_sistema_controlado.png}
  	\caption{Planta controlada usando un controlador PID}
  	\label{fig:pid_sistema_controlado}
 \end{figure}
@@ -364,7 +365,7 @@ Finalmente podemos validar que las respuestas de los sistemas controlados por un
 \begin{figure}[h!]
 	\centering 
 	\graphicspath{./imagenes/}
- 	\includegraphics[height=4cm]{./imagenes/compara_pi_pid.png}
+ 	\includegraphics[width=0.45\textwidth]{./imagenes/compara_pi_pid.png}
  	\caption{Comparación entre PI y PID}
  	\label{fig:compara_pi_pid}
 \end{figure}
@@ -377,20 +378,20 @@ Finalmente podemos validar que las respuestas de los sistemas controlados por un
 
 \begin{thebibliography}{1}
 
-\bibitem{uno}
-Ministerio de Salud, Perú
-\newblock {\em REGISTRO NACIONAL DISCAPACIDAD EN CIFRAS}
-\newblock CONADIS-INEI 2008
-
-\bibitem{git}
-bitbucket.org
-\newblock {\em http://git-scm.com/}
+\bibitem{}
+Repositorios 
+\newblock {\em https://github.com/oskargicast/ControladorPI}
 \newblock 
 
-\bibitem{bitbucket}
-bitbucket.org
-\newblock {\em https://bitbucket.org/jorgenro/proyecto-mecatronico}
-\newblock Repositorio privado
+\bibitem{}
+Ing. Rodriguez Bustinza, Ricardo
+\newblock {\em Diseño del controlador discreto usando aproximador digital.}
+\newblock 
+
+\bibitem{}
+Leonardo J. Marín, Víctor M. Alfaro
+\newblock {\em Sintonización de controladores por ubicación de polos y ceros}
+\newblock Departamento de Automática, Escuela de Ingeniería Eléctrica, Universidad de Costa Rica
 
 \end{thebibliography}
 
