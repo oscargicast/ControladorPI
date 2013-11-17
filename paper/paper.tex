@@ -17,7 +17,7 @@
 
 \begin{document}
 
-\title{Identificación de una planta de 3 Opams (sistema de tercer orden) utilizando la estructura paramétrica ARMAX.}
+\title{Diseño y simulación de un controlador PI para un planta RC.}
 
 
 \author{Autores \\ 
@@ -43,7 +43,11 @@
 
 \section{OBJETIVOS} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{itemize} \item Identificar el modelo de un planta de 3 Op-Amp?s a través de la adquisición de datos y de la estructura paramétrica ARMAX \end{itemize}
+\begin{itemize} 
+\item Identificar el modelo de un planta RC través de la adquisición de datos y de la estructura paramétrica ARX. 
+\item Diseñar un controlador PI para la planta RC.
+\item Analizar y comparar un controlador PI y PID para la planta RC.
+\end{itemize}
 
 \section{MARCO TEÓRICO}%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -142,6 +146,18 @@ Para hallar el controlador de nuestra planta RC, procederemos primero a identifi
 P\big(s\big) =  \frac{Gain}{s+\frac{1}{\tau}} = \frac{8.66}{s+8.59} \label{eq:5}
 \end{equation}
 
+Observamos que nuestra planta presenta un polo real
+
+\begin{equation}
+s_{p}=-8.59
+\end{equation}
+
+Sabemos que la Función de Transferencia de nuestro controlador PI es de la siguiente forma
+
+\begin{equation}
+G_{c}(s) = \frac{K(s+a)}{s}
+\end{equation}
+
 Asumiendo las siguientes variables de diseño:
 
 \begin{eqnarray}
@@ -149,15 +165,99 @@ t_{s} = 1; \\
 M_{p} = 0.1;
 \end{eqnarray}
 
-Con esto procederemos a hallar nuestros polos deseados de la siguiente manera:
+Con esto procederemos a hallar nuestros polos deseados ($s_{d}$) de la siguiente manera:
 
 \begin{eqnarray}
 \zeta = - \frac{\log(M_{p})}{\sqrt{\log(M_{p}^2 + \pi^2)}} = 0.5912 \\
-w_{n} = \frac{4.6}{\zeta * t_{s}} = 7.7814
-%wn=4.6/(zeta*ts);
-%t-log(Mp)/sqrt((log(Mp))^2+pi^2);
+w_{n} = \frac{4.6}{\zeta t_{s}} = 7.7814 
+%s1=-zetawn+1jwnsqrt(1-zeta^2);
 \end{eqnarray}
 
+%\begin{eqnarray}
+%\nonumber s_{d} & = & - \zeta  w_{n} & \pm jw_{n}\sqrt{1-\zeta ^2} \\
+%& = & -4.6  & \pm j6.2761
+%\end{eqnarray}
+
+\begin{equation}
+\begin{array}{ccccc}
+s_{d} & = & - \zeta  w_{n} & \pm & jw_{n}\sqrt{1-\zeta ^2} \\
+& = & -4.6  & \pm & j6.2761
+\end{array}
+\end{equation}
+
+Graficando el lugar de las raices (Ver Fig  ), en ella se observa el polo deseado, asi como el polo de la planta y el cero del controlador PI cuyos parametros estan hallados aplicando el criterio de fase para el caso del cero y el criterio de la magnitud para la ganancia.
+
+%FIGURA
+%\begin{figure}[h!]
+%  \centering
+%    \includegraphics[height=4cm]{images/simulation_proteus.png}
+%  \caption{Respuesta de la planta a la función Gate}
+%  \label{fig:simulation_proteus}
+%\end{figure}
+
+Note que $r_{3}$ corresponde al cero del integrador que más adelante será calculado. 
+Hallando los angulos $\theta _{1}$ y $ \theta _{2}$ con los cuales podrémos calcular $\theta _{3}$:
+
+\begin{eqnarray}
+ \theta_{1}= \pi  -atan \big( \frac{Id}{rd} \big) =  2.2033 rad \\
+ \theta_{2}= atan \big( \frac{Id-Ip}{rp-rd} \big) =  1.0046 rad \\
+ \theta_{3}= \theta_{1}+ \theta_{2}+  \pi = 0.0663 rad
+\end{eqnarray}
+
+Usaremos el caso 2 para el cálculo del cero del controlador ($a$) debido a que el valor de $\theta_{3}<\frac{\Pi}{2}$
+
+\begin{equation}
+a =  r_{d} + \frac{i_{d}}{\tan(\theta _{3})}
+%rd+id/tan(theta3)
+\end{equation}
+
+Segun los parametros de la Fig  podemos hallar las siguientes magnitudes:
+
+\begin{equation}
+\begin{array}{ccc}
+r_{1} & = & s_{d} - s{c} \\
+& = &  -4.6000 + j6.2761 
+\end{array}
+\end{equation}
+
+\begin{equation}
+\begin{array}{ccc}
+r_{2} & = & s_{d} - s{p} \\
+& = & 3.9895 + j6.2761 
+\end{array}
+\end{equation}
+
+\begin{equation}
+\begin{array}{ccc}
+r_{3} & = & s_{d} - z{c} \\
+& = &  -103.79 + j6.2761 
+\end{array}
+\end{equation}
+
+Para el cálculo de la ganancia K, hacemos uso de la ganancia unitaria en el lugar de las raíces:
+
+\begin{equation}
+K = \frac{\left| r1 \right|  \left| r2 \right|}{Gain  \left| r3 \right|} =  0.0642
+%K = abs(r1)abs(r2)/(gainabs(r3));
+\end{equation}
+
+Finalmente nuestro controlador PI queda de la siguiente forma:
+ 
+\begin{equation}
+G_{c}(s) = \frac{0.06422s+6.37}{s}
+%  0.06422 s + 6.37
+%  ----------------
+%         s
+\end{equation}
+
+Usando re-diseño por el metodo de Tustin para hallar el controlador en tiempo discreto, obtenemos:
+
+\begin{equation}
+G_{c}(z) = \frac{0.1377 z + 0.009287}{z - 1}
+%  0.1377 z + 0.009287
+%  -------------------
+%         z - 1
+\end{equation}
 
 \section{CONCLUSIONES} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
