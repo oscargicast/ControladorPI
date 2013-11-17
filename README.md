@@ -13,6 +13,9 @@ Se resuelven en el siguiente repo:
 - [x] Rediseño digital de un controlador PI por Tustín.
 - [x] Comparación entre control PI y PID.
 
+La *documentación* con mas detalle puede ser encontrada en el directorio 
+**paper**.
+
 MATLAB 
 ------
 Se identifica el sistema usando la estructura parametrica ARX.

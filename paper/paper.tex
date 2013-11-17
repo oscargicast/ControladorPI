@@ -14,8 +14,43 @@
 \usepackage{float}
 \setcounter{page}{1}
 
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\lstset{ %
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+  breaklines=true,                 % sets automatic line breaking
+  captionpos=b,                    % sets the caption-position to bottom
+  commentstyle=\color{mygreen},    % comment style
+  deletekeywords={...},            % if you want to delete keywords from the given language
+  escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+  extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  frame=single,                    % adds a frame around the code
+  keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+  keywordstyle=\color{blue},       % keyword style
+  language=Octave,                 % the language of the code
+  morekeywords={*,...},            % if you want to add more keywords to the set
+  numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                   % how far the line-numbers are from the code
+  numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+  rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,          % underline spaces within strings only
+  showtabs=false,                  % show tabs within strings adding particular underscores
+  stepnumber=2,                    % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{mymauve},     % string literal style
+  tabsize=2,                       % sets default tabsize to 2 spaces
+  title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
 
 \begin{document}
+\include{./imagenes}
 
 \title{Identificación de una planta de 3 Opams (sistema de tercer orden) utilizando la estructura paramétrica ARMAX.}
 
@@ -134,49 +169,205 @@ Cuya simulación obtenida en Proteus es la siguiente: (ver Fig. ~\ref{fig:simulat
 %\end{figure}
  
 
-\section{PRESENTACIÓN DE RESULTADOSS} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{PRESENTACIÓN DE RESULTADOS} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Para hallar el controlador de nuestra planta RC, procederemos primero a identificar mediante un ARX[111], con esto obtendremos la planta identificada la cual seria como se muestra en la ecuación \ref{eq:5}.
+En este capitulo mostraremos los resultados del análisis anterior. LLegando a obtener:
+\begin{itemize}
+\item Diseño analógico de un controlador PI.
+\item Rediseño digital de un controlador PI por Tustin.
+\item Comparación entre control PI y PID.
+\end{itemize}
+ 
+\subsection{MATLAB}
 
-\begin{equation}
-P\big(s\big) =  \frac{Gain}{s+\frac{1}{\tau}} = \frac{8.66}{s+8.59} \label{eq:5}
-\end{equation}
+La data obtenida de la adquisición se puede apreciar en la figura ~\ref{fig:data}
+\begin{figure}[h!]
+	\centering 
+	\graphicspath{./imagenes/}
+ 	\includegraphics[height=4cm]{./imagenes/data.png}
+ 	\caption{Data obtenida de la adquisición}
+ 	\label{fig:data}
+\end{figure}
 
-Asumiendo las siguientes variables de diseño:
+\begin{figure}[h!]
+	\centering 
+	\graphicspath{./imagenes/}
+ 	\includegraphics[height=4cm]{./imagenes/identificacion_arx.png}
+ 	\caption{Identificación ARX}
+ 	\label{fig:identificacion_arx}
+\end{figure}
 
-\begin{eqnarray}
-t_{s} = 1; \\
-M_{p} = 0.1;
-\end{eqnarray}
+ 
+Se identifica el sistema usando la estructura paramétrica ARX (ver Fig. ~\ref{fig:identificacion_arx}) usando una frecuencia de muestreo $f_{s}$ de $=30Hz$. Posteriormente, hallamos los controladores PI y exportamos los coeficientes obtenidos del controlador digital al directorio \textit{/data} para su procesamiento en labview. El código generado es el siguiente:
 
-Con esto procederemos a hallar nuestros polos deseados de la siguiente manera:
 
-\begin{eqnarray}
-\zeta = - \frac{\log(M_{p})}{\sqrt{\log(M_{p}^2 + \pi^2)}} = 0.5912 \\
-w_{n} = \frac{4.6}{\zeta * t_{s}} = 7.7814
-%wn=4.6/(zeta*ts);
-%t-log(Mp)/sqrt((log(Mp))^2+pi^2);
-\end{eqnarray}
+\begin{lstlisting}
+clear all; close all; clc
+%% Programa para calcular el controlador
+% -------------------------------------------------------------------------
+%% Cargando la DATA
+% -------------------------------------------------------------------------
+dataLeida = load('../data/data_rc.lvm');
+T=1/30; % Tiempo de Muestreo 
+y1=dataLeida(:,4);
+u1=dataLeida(:,6);
+
+figure
+subplot(211)
+plot(y1,'b','LineWidth',2); 
+xlabel('\bf t(seg)'); ylabel('\bf y(volts)');
+subplot(212)
+plot(u1,'r','LineWidth',2); 
+xlabel('\bf t(seg)'); ylabel('\bf u(volts)');
+
+% -------------------------------------------------------------------------
+%% Identificación ARX
+% -------------------------------------------------------------------------
+data=iddata(y1,u1,T);
+th=arx(data,[1 1 1]);
+present(th)
+thc=d2c(th);
+[num,den]=tfdata(thc);
+Gp=tf(num,den)
+gain = num{1}(2);
+tau = 1/num{1}(2);
+
+% -------------------------------------------------------------------------
+%% Polos de la planta 
+% -------------------------------------------------------------------------
+sp=pole(Gp);
+ip=abs(imag(sp));
+rp=abs(real(sp));
+
+% -------------------------------------------------------------------------
+%% Especificaciones de diseño polos deseados
+% -------------------------------------------------------------------------
+ts=1;
+Mp=0.1;
+zeta=-log(Mp)/sqrt((log(Mp))^2+pi^2);
+wn=4.6/(zeta*ts);
+s1=-zeta*wn+1j*wn*sqrt(1-zeta^2);
+% Polo deseado
+sd=s1;
+id=abs(imag(sd));
+rd=abs(real(sd));
+
+% -------------------------------------------------------------------------
+%% Diseño del control PI continuo
+% -------------------------------------------------------------------------
+theta1=pi-atan(id/rd); 
+theta2=atan((id-ip)/(rp-rd)); 
+theta3=theta1+theta2+pi;   % condición de fase
+theta3 = pi_to_pi(theta3); 
+
+if abs(theta3)<pi/2
+    zc = rd+id/tan(theta3);
+else
+    zc = rd-id/tan(theta3);
+end
+a = zc; % zero del controlador
+% polo del controlador
+sc = 0;
+
+r1 = sd-sc; %polo
+r2 = sd-sp; %polo
+r3 = sd-zc; %zero
+
+K = abs(r1)*abs(r2)/(gain*abs(r3));
+
+% -------------------------------------------------------------------------
+%% Simulación del Controlador PI continuo
+% -------------------------------------------------------------------------
+Gc=tf(K*[1 a],[1 0])
+% Funcion de transferencia en lazo cerrado H 
+L=series(Gc,Gp);
+H=L/(L+1)
+
+figure; hold on;
+t = 0:0.001:5;
+
+u=ones(size(t));
+yp=lsim(H,u,t);
+
+plot(t,u,'r')
+plot(t,yp, 'b', 'LineWidth',2)
+
+xlabel('\bf t(seg)'); ylabel('\bf y(volts)');
+legend('set point', 'y_{lazo cerrado}');
+
+% -------------------------------------------------------------------------
+%% Re-diseño por tustin del Control en Tiempo Discreto
+% -------------------------------------------------------------------------
+T=tau/5;
+[Nt,Dt] = tfdata(Gc,'v');
+Nt = poly2sym(Nt,'s');
+Dt = poly2sym(Dt,'s');
+syms z
+Gdt = Nt/Dt;
+Gdt = subs(Gdt,{'s'},(2*(z-1))/(T*(z+1)));
+Gdt = simplify(Gdt);
+Gdt = vpa(Gdt,4); 
+[NDt, DDt] = numden(Gdt);
+NDt = sym2poly(NDt);
+DDt = sym2poly(DDt);
+
+% -------------------------------------------------------------------------
+%% FT del Controlador digital D(z)
+% -------------------------------------------------------------------------
+GDt = tf(NDt,DDt,T)
+
+% -------------------------------------------------------------------------
+%% Coeficientes para lectura de LabVIEW
+% -------------------------------------------------------------------------
+[Np,Dp]=tfdata(Gp,'v');
+planta = [Np Dp]; 
+save '../data/coef_planta.lvm' planta -ascii -tabs
+save '../data/num_controller.lvm' NDt -ascii -tabs
+save '../data/den_controller.lvm' DDt -ascii -tabs
+\end{lstlisting}
+
+
+Finalmente podemos validar que las respuestas de los sistemas controlados por un controlador PI (ver Fig. ~\ref{fig:pi_sistema_controlado}) y PID (ver Fig. ~\ref{fig:pid_sistema_controlado}) en lazo cerrado cumplen con las condiciones de diseño propuestas.
+
+
+
+
+
+\begin{figure}[h!]
+	\centering 
+	\graphicspath{./imagenes/}
+ 	\includegraphics[height=4cm]{./imagenes/pi_sistema_controlado.png}
+ 	\caption{Planta controlada usando un controlador PI}
+ 	\label{fig:pi_sistema_controlado}
+\end{figure}
+
+\begin{figure}[h!]
+	\centering 
+	\graphicspath{./imagenes/}
+ 	\includegraphics[height=4cm]{./imagenes/pid_sistema_controlado.png}
+ 	\caption{Planta controlada usando un controlador PID}
+ 	\label{fig:pid_sistema_controlado}
+\end{figure}
+
+
 
 
 \section{CONCLUSIONES} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{itemize}
-\item Se debe estar consciente que el periodo de muestreo empleado en la adquisición de datos (usando DAQ) no debe cambiar al momento de realizar la identificación debido a que al hacerlo pudimos notar que la señal sufre una división en su frecuencia mientras más distante el tiempo de muestreo empleado sea del real. Así mismo cabe resaltar que nuestro $T_{s}=0.033...$, sin embargo, para labview basta con aproximarlo con $T_{s}=0.03$, de lo contrario nos encontraremos con errores propios del software.
-
-\item Los modelos identificados con buena performance (mayor a 89%) se mimetizan cuando a todos ellos se les aplica una entrada gate llegando a asimilarse de forma muy cercana a la data experimental y teórica. (ver Fig. ~\ref{gate_for_all_identified_models}).
-
-\item Podemos observar que mientras las respuestas se mimetizan, las funciones de transferencia parecen cambiar tanto en orden como en coeficientes dependiendo de los parámetros usados en ARMAX. Así mismo, podemos observar que tanto Matlab como Labview resuelven los modelos ARMAX para los mismos parámetros, entradas y salidas de forma parecida (los coeficientes tienden a ser los mismos).
-
-
-\item El tipo de entrada para la cual se puede obtener mayor característica del sistema es la señal gate y step(en segundo lugar), y la menor es la rampa y seno es por ello que ante una entrada gate, nuestra estructura ARMAX identifica un modelo con alto performance respecto a otras entradas. Es por ellos que cuando comparamos a todos los modelos frente a nuestra salida experimental, las que los modelos identificados que más la mimetizan son los del producto del gate y step.
-
-\item Las estructura ARMAX(1,1,1,1) o ARX pueden ser adecuadas para sistemas de primer orden, pero para el nuestro no lo es quedando comprobado en los graficos en los cuales comparamos diversas estructuras. 
-
-\item No siempre la estructura de mayor orden determina un mayor performance, y así lo hiciera se debe analizar el la eficiencia desde un punto de vista de desarrollo (computacional). 
+\item Notamos que comparando ambos controladores empleados (PI y PID), el sistema responde mejor frente al controlador PI ya que posee un menor sobre impulso ante el PID. (ver Fig. ~\ref{fig:compara_pi_pid})
 
 
 \end{itemize}
+
+
+\begin{figure}[h!]
+	\centering 
+	\graphicspath{./imagenes/}
+ 	\includegraphics[height=4cm]{./imagenes/compara_pi_pid.png}
+ 	\caption{Comparación entre PI y PID}
+ 	\label{fig:compara_pi_pid}
+\end{figure}
 
 
 \bibliographystyle{IEEE} %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
