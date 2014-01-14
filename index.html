@@ -28,37 +28,131 @@
     <div id="content-wrapper">
       <div class="inner clearfix">
         <section id="main-content">
-          <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+          <h1>
+<a name="dise%C3%B1o-anal%C3%ADtico-de-un-controlador-pi-anal%C3%B3gico-y-por-redise%C3%B1o-digital" class="anchor" href="#dise%C3%B1o-anal%C3%ADtico-de-un-controlador-pi-anal%C3%B3gico-y-por-redise%C3%B1o-digital"><span class="octicon octicon-link"></span></a>Diseño Analítico de un Controlador PI Analógico y por Rediseño Digital</h1>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+<blockquote>
+<p>Diseño analítico de un controlador PI analógico y digital para un sistema
+de primer orden (circuito RC).</p>
+</blockquote>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
+<p>planta: <strong>Gp(s)=gain/(s+1/tau)</strong></p>
+
+<p>Nota: <strong>fs = 30Hz</strong>.</p>
+
+<p>Se resuelven en el siguiente repo:</p>
+
+<ul>
+<li>[x] Diseño analógico de un controlador PI.</li>
+<li>[x] Rediseño digital de un controlador PI por Tustín.</li>
+<li>[x] Comparación entre control PI y PID.</li>
+</ul><p>La <em>documentación</em> con mas detalle puede ser encontrada en el directorio 
+<strong>paper</strong>.</p>
+
+<h2>
+<a name="matlab-" class="anchor" href="#matlab-"><span class="octicon octicon-link"></span></a>MATLAB </h2>
+
+<p>Se identifica el sistema usando la estructura parametrica ARX.</p>
+
+<div class="highlight highlight-matlab"><pre><span class="o">&gt;&gt;</span> <span class="n">iden_arx</span><span class="p">.</span><span class="n">m</span>
+</pre></div>
+
+<p>Hallamos los controladores PI y exportamos los coeficientes obtenidos del 
+controlador digital al directorio <em>/data</em> para su procesamiento en labview.</p>
+
+<div class="highlight highlight-matlab"><pre><span class="o">&gt;&gt;</span> <span class="n">control_pi</span><span class="p">.</span><span class="n">m</span>
+</pre></div>
+
+<p>Hallamos los controladores PID y exportamos los coeficientes obtenidos del
+controlador digital al directorio <em>/data</em> para su procesamiento en labview.</p>
+
+<div class="highlight highlight-matlab"><pre><span class="o">&gt;&gt;</span> <span class="n">control_pid</span><span class="p">.</span><span class="n">m</span>
+</pre></div>
+
+<h2>
+<a name="labview-" class="anchor" href="#labview-"><span class="octicon octicon-link"></span></a>LABVIEW </h2>
+
+<p>Identificación de nuestra plata (Para comparar con el resultado de matlab
+obtenido en <em>iden_arx.m</em>)</p>
+
+<pre lang="labview"><code>&gt;&gt; arx.vi
 </code></pre>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<p>Validamos nuestro controlador digital el modelos de nuestra planta 
+identificada.</p>
 
-<h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+<pre lang="labview"><code>&gt;&gt; simulado.vi
+</code></pre>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<p>Validación en tiempo real con nuestra planta experimental.</p>
 
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+<pre lang="labview"><code>&gt;&gt; tiempo_real.vi
+</code></pre>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<p><strong>Advertencia</strong> that to run all the labview files. First you need to change the 
+absolute paths to the ones that belong you.</p>
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+<h2>
+<a name="data-" class="anchor" href="#data-"><span class="octicon octicon-link"></span></a>DATA </h2>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<p>Data adquirida con una DAQ.</p>
 
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+<pre lang="labview"><code>&gt;&gt; data_rc.lvm
+</code></pre>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<p>Coeficientes generados, representan el modelo de la planta identificada.</p>
+
+<pre lang="labview"><code>&gt;&gt; coef_planta.lvm
+</code></pre>
+
+<p>Numerador del controlador digital.</p>
+
+<pre lang="labview"><code>&gt;&gt; num_controller.lvm
+</code></pre>
+
+<p>Denominador del controlador digital.</p>
+
+<pre lang="labview"><code>&gt;&gt; den_controller.lvm
+</code></pre>
+
+<p><em>Nota</em>
+Dependiendo que script ejecutemos:</p>
+
+<ul>
+<li>control_pi.m</li>
+<li>control_pid.m</li>
+</ul><p>, obtendremos los coeficientes generados 
+en nuestra <em>/data</em> para nuestro controlador digital.</p>
+
+<h1>
+<a name="resultados-obtenidos-" class="anchor" href="#resultados-obtenidos-"><span class="octicon octicon-link"></span></a>Resultados Obtenidos </h1>
+
+<h2>
+<a name="data-obtenida" class="anchor" href="#data-obtenida"><span class="octicon octicon-link"></span></a>Data Obtenida</h2>
+
+<p><img src="https://raw.github.com/oskargicast/ControladorPI/master/imagenes/data.png" alt="data" title="data"></p>
+
+<h2>
+<a name="identificaci%C3%B3n-arx" class="anchor" href="#identificaci%C3%B3n-arx"><span class="octicon octicon-link"></span></a>Identificación ARX</h2>
+
+<p><img src="https://raw.github.com/oskargicast/ControladorPI/master/imagenes/identificacion_arx.png" alt="identificacion_arx" title="identificacion_arx"></p>
+
+<h2>
+<a name="planta-controlada-usando-un-controlador-pi" class="anchor" href="#planta-controlada-usando-un-controlador-pi"><span class="octicon octicon-link"></span></a>Planta controlada usando un controlador PI</h2>
+
+<p><img src="https://raw.github.com/oskargicast/ControladorPI/master/imagenes/pi_sistema_controlado.png" alt="pi_sistema_controlado" title="pi_sistema_controlado"></p>
+
+<h2>
+<a name="planta-controlada-usando-un-controlador-pid" class="anchor" href="#planta-controlada-usando-un-controlador-pid"><span class="octicon octicon-link"></span></a>Planta controlada usando un controlador PID</h2>
+
+<p><img src="https://raw.github.com/oskargicast/ControladorPI/master/imagenes/pid_sistema_controlado.png" alt="pid_sistema_controlado" title="pid_sistema_controlado"></p>
+
+<h2>
+<a name="comparaci%C3%B3n-entre-pi-y-pid" class="anchor" href="#comparaci%C3%B3n-entre-pi-y-pid"><span class="octicon octicon-link"></span></a>Comparación entre PI y PID</h2>
+
+<p><img src="https://raw.github.com/oskargicast/ControladorPI/master/imagenes/compara_pi_pid.png" alt="compara_pi_pid" title="compara_pi_pid"></p>
+
+<hr>
         </section>
 
         <aside id="sidebar">
